@@ -1,0 +1,43 @@
+name: Build and report
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'images/**'
+      - '.github/workflows/build.yml'
+  pull_request:
+    paths:
+      - 'images/**'
+      - '.github/workflows/build.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  packages: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [postfix, cyrus-imapd, saslauthd]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build --pull -t local/${{ matrix.service }}:test images/${{ matrix.service }}
+      - name: Smoke test package installation
+        run: docker run --rm --entrypoint /bin/rpm local/${{ matrix.service }}:test -qa
+      - name: Install Syft
+        uses: anchore/sbom-action/download-syft@v0
+      - name: Generate SBOM
+        run: |
+          mkdir -p reports
+          syft docker:local/${{ matrix.service }}:test -o syft-json=reports/sbom.syft.json -o spdx-json=reports/sbom.spdx.json
+      - name: Install Grype and Grant
+        run: |
+          # Install with version-pinned, verified binaries before enabling production CI.
+          echo 'Scanner installation is intentionally pending version pinning.'
+      - name: Upload SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-${{ matrix.service }}
+          path: reports/

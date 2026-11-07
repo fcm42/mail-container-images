@@ -1,0 +1,9 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "pinDigests": true,
+  "labels": ["dependencies"],
+  "packageRules": [
+    {"matchDatasources": ["docker"], "matchPackageNames": ["almalinux"], "groupName": "AlmaLinux 10 base image"}
+  ]
+}
