@@ -29,6 +29,9 @@ jobs:
       - name: saslauthd socket smoke test
         if: matrix.service == 'saslauthd'
         run: IMAGE=local/saslauthd:test ./tests/saslauthd-runtime.sh
+      - name: saslauthd PAM authentication integration test
+        if: matrix.service == 'saslauthd'
+        run: IMAGE=local/saslauthd:test ./tests/saslauthd-pam.sh
       - name: Smoke test package installation
         run: docker run --rm --entrypoint /bin/rpm local/${{ matrix.service }}:test -qa
       - name: Install Syft
