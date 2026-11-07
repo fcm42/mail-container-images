@@ -4,10 +4,12 @@ on:
     branches: [main]
     paths:
       - 'images/**'
+      - 'tests/**'
       - '.github/workflows/build.yml'
   pull_request:
     paths:
       - 'images/**'
+      - 'tests/**'
       - '.github/workflows/build.yml'
   workflow_dispatch:
 permissions:
@@ -24,6 +26,9 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build image
         run: docker build --pull -t local/${{ matrix.service }}:test images/${{ matrix.service }}
+      - name: saslauthd socket smoke test
+        if: matrix.service == 'saslauthd'
+        run: IMAGE=local/saslauthd:test ./tests/saslauthd-runtime.sh
       - name: Smoke test package installation
         run: docker run --rm --entrypoint /bin/rpm local/${{ matrix.service }}:test -qa
       - name: Install Syft

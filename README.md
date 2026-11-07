@@ -24,3 +24,7 @@ Use `podman build` instead of `docker build` to validate Podman.
 4. Publish tested OCI images to GHCR with immutable digests and SBOM association.
 5. Add selective change detection, RPM update checks, Renovate digest pinning, scheduled rescans.
 6. Test RHEL 9, Ubuntu 24.04, Debian 13 with Docker and Podman; prepare optional Quadlets.
+
+## Iteration 2: saslauthd runtime smoke test
+
+The saslauthd image now has a configurable foreground entrypoint and a socket-creation smoke test. See `docs/saslauthd-integration.md`. This does not yet prove successful PAM/LDAP authentication or cross-container integration.
